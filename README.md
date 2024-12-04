@@ -13,8 +13,8 @@ dbt is the T in ELT. Organize, cleanse, denormalize, filter, rename, and pre-agg
 
 ## dbt-gaussdbdws
 
-The `dbt-gaussdbdws` package contains all of the code enabling dbt to work with a gaussdbdws database. For
-more information on using dbt with gaussdbdws, consult [the docs](https://docs.getdbt.com/docs/profile-gaussdbdws).
+The `dbt-gaussdbdws` package contains all of the code enabling dbt to work with huawei gaussdb or gaussdb(dws) database. For
+more information on using dbt with dbt-gaussdbdws, consult [the docs](https://docs.getdbt.com/docs/profile-gaussdbdws).
 
 ## Getting started
 
@@ -34,6 +34,47 @@ fi
 ```
 
 This ensures the version of `psycopg2` will match that of `psycopg2-binary`.
+**Note:** The native PostgreSQL driver cannot connect to GaussDB directly. If you need to use the PostgreSQL native driver, you must set `password_encryption_type: 1` (compatibility mode supporting both MD5 and SHA256) to enable the PostgreSQL native driver.
+
+###  `GaussDB psycopg2`
+It is recommended to use the following approach: GaussDB uses SHA256 as the default encryption method for user passwords, while the PostgreSQL native driver defaults to MD5 for password encryption. Follow the steps below to prepare the required drivers and dependencies and load the driver.
+
+1.You can obtain the required package from the release bundle. The package is named as:
+`GaussDB-Kernel_<database_version>_<OS_version>_64bit_Python.tar.gz`.
+- psycopg2：Contains the psycopg2 library files.
+- lib：Contains the psycopg2 library files.
+
+2.Follow the steps below to load the driver:
+```bash
+# Extract the driver package, for example: GaussDB-Kernel_xxx.x.x_Hce_64bit_Python.tar.gz
+tar -zxvf GaussDB-Kernel_xxx.x.x_Hce_64bit_Python.tar.gz
+
+# Uninstall psycopg2-binary
+pip uninstall -y psycopg2-binary
+
+# Install psycopg2 by copying it to the site-packages directory of the Python installation using the root user
+cp psycopg2 $(python3 -c 'import site; print(site.getsitepackages()[0])') -r
+
+# Grant permissions
+chmod 755 $(python3 -c 'import site; print(site.getsitepackages()[0])')/psycopg2 -R
+
+# Verify the existence of the psycopg2 directory
+ls -ltr $(python3 -c 'import site; print(site.getsitepackages()[0])') | grep psycopg2
+
+# To add the psycopg2 directory to the $PYTHONPATH environment variable and make it effective
+export PYTHONPATH=$(python3 -c 'import site; print(site.getsitepackages()[0])'):$PYTHONPATH
+
+# For non-database users, you need to add the extracted lib directory to the LD_LIBRARY_PATH environment variable
+export LD_LIBRARY_PATH=/root/lib:$LD_LIBRARY_PATH
+
+# To verify that the configuration is correct and there are no errors
+(.venv) [root@ecs-euleros-dev ~]# python3
+Python 3.9.9 (main, Jun 19 2024, 02:50:21)
+[GCC 10.3.1] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import psycopg2
+
+```
 
 
 ## Contribute
