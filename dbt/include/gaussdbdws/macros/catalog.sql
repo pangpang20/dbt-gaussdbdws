@@ -41,11 +41,11 @@
         {%- if not loop.last %} or {% endif -%}
       {%- endfor -%}
     )
-      and not pg_is_other_temp_schema(sch.oid) 
-      and tbl.relpersistence in ('p', 'u') 
-      and tbl.relkind in ('r', 'v', 'f', 'p', 'm') 
-      and col.attnum > 0 
-      and not col.attisdropped 
+      and not pg_is_other_temp_schema(sch.oid)
+      and tbl.relpersistence in ('p', 'u')
+      and tbl.relkind in ('r', 'v', 'f', 'p', 'm')
+      and col.attnum > 0
+      and not col.attisdropped
 
     order by
         sch.nspname,

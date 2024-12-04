@@ -12,7 +12,7 @@ from dbt_common.events.functions import warn_or_error
 from dbt_common.helper_types import Port
 from dbt_common.record import get_record_mode_from_env, RecorderMode
 from mashumaro.jsonschema.annotations import Maximum, Minimum
-import psycopg2 
+import psycopg2
 from typing_extensions import Annotated
 
 

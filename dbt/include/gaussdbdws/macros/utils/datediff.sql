@@ -8,7 +8,7 @@
         ({{ gaussdbdws__datediff(first_date, second_date, 'year') }} * 12 + date_part('month', ({{second_date}})::date) - date_part('month', ({{first_date}})::date))
     {% elif datepart == 'day' %}
         extract(day FROM ({{second_date}})::date - ({{first_date}})::date)
-    {% elif datepart == 'week' %} 
+    {% elif datepart == 'week' %}
         floor({{ gaussdbdws__datediff(first_date, second_date, 'day') }} / 7)
     {% elif datepart == 'hour' %}
         ({{ gaussdbdws__datediff(first_date, second_date, 'day') }} * 24 + date_part('hour', ({{second_date}})::timestamp) - date_part('hour', ({{first_date}})::timestamp))
@@ -25,4 +25,3 @@
     {% endif %}
 
 {%- endmacro %}
-

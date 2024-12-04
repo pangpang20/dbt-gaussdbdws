@@ -8,7 +8,7 @@ from dbt.include import gaussdbdws
 
 
 Plugin = AdapterPlugin(
-    adapter=GaussDBDWSAdapter,   
+    adapter=GaussDBDWSAdapter,
     credentials=GaussDBDWSCredentials,
     include_path=gaussdbdws.PACKAGE_PATH,
 )
