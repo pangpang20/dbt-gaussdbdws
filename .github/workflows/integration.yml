@@ -54,7 +54,9 @@ jobs:
           dbt --version
 
       - name: Run pre-commit hooks
-        run: pre-commit run --all-files --show-diff-on-failure
+        run: |
+          source venv/bin/activate
+          pre-commit run --all-files --show-diff-on-failure
 
   build:
     name: Build Packages
@@ -67,6 +69,9 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Create a virtual environment
+        run: python3 -m venv venv 
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -74,11 +79,14 @@ jobs:
 
       - name: Install python dependencies
         run: |
+          source venv/bin/activate
           pip install --user --upgrade pip
           pip install --upgrade setuptools wheel twine check-wheel-contents
           pip --version
       - name: Build distributions
-        run: ./scripts/build-dist.sh
+        run: |
+          source venv/bin/activate
+          ./scripts/build-dist.sh
 
       - name: Show distributions
         run: ls -lh dist/
