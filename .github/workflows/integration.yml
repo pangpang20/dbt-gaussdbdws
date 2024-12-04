@@ -93,9 +93,11 @@ jobs:
 
       - name: Check distribution descriptions
         run: |
+          source venv/bin/activate
           twine check dist/*
       - name: Check wheel contents
         run: |
+          source venv/bin/activate
           check-wheel-contents dist/*.whl --ignore W007,W008
       - uses: actions/upload-artifact@v3
         with:
