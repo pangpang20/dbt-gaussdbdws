@@ -96,6 +96,7 @@ jobs:
         run: |
           source venv/bin/activate
           pip install twine
+          pip show twine
           twine check dist/*
       - name: Check wheel contents
         run: |
