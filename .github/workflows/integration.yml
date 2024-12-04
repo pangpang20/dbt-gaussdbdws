@@ -35,6 +35,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
 
+      - name: Install Hatch
+        run: pip install --user hatch        
+
       - name: Install python dependencies
         run: |
           pip install --user --upgrade pip

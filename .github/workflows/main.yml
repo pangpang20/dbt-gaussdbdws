@@ -87,11 +87,16 @@ jobs:
           pip install --user --upgrade pip
           pip install --upgrade setuptools wheel twine check-wheel-contents
           pip --version
+
+      - name: Install Hatch
+        run: pip install --user hatch
+
       - name: Build distributions
         run: ./scripts/build-dist.sh
 
       - name: Show distributions
         run: ls -lh dist/
+
 
       - name: Check distribution descriptions
         run: |
