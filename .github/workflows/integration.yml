@@ -41,13 +41,13 @@ jobs:
       - name: Install python dependencies
         run: |
           source venv/bin/activate
-          pip install --user --upgrade pip
+          pip install --upgrade pip
           pip install pre-commit
           pip install mypy==0.782
           pip install flake8
           pip install black
           pip install dbt
-          pip install --user hatch 
+          pip install hatch 
           pip --version
           pre-commit --version
           mypy --version
