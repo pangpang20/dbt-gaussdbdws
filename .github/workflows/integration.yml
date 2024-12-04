@@ -80,7 +80,7 @@ jobs:
       - name: Install python dependencies
         run: |
           source venv/bin/activate
-          pip install --user --upgrade pip
+          pip install  --upgrade pip
           pip install --upgrade setuptools wheel twine check-wheel-contents
           pip --version
       - name: Build distributions
