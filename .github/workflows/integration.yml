@@ -95,6 +95,7 @@ jobs:
       - name: Check distribution descriptions
         run: |
           source venv/bin/activate
+          pip install twine
           twine check dist/*
       - name: Check wheel contents
         run: |
