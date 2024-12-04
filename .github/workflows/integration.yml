@@ -56,7 +56,7 @@ jobs:
       - name: Run pre-commit hooks
         run: |
           source venv/bin/activate
-          pre-commit run --all-files --show-diff-on-failure
+          pre-commit run --all-files
 
   build:
     name: Build Packages
@@ -123,12 +123,22 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install PostgreSQL on macOS
+        if: runner.os == 'macOS'
+        run: |
+          brew install postgresql
+
       - name: Create a virtual environment
         run: python3 -m venv venv
 
       - name: Activate virtual environment and install dependencies
         run: |
-          source venv/bin/activate
+          if [ $RUNNER_OS = 'Windows' ]; then
+            .\\venv\\Scripts\\activate
+          else
+            source venv/bin/activate
+          fi
+
           pip install --upgrade pip
           pip install --upgrade wheel
           pip --version
@@ -143,20 +153,36 @@ jobs:
 
       - name: Install wheel distributions
         run: |
-          source venv/bin/activate
+          if [ $RUNNER_OS = 'Windows' ]; then
+            .\\venv\\Scripts\\activate
+          else
+            source venv/bin/activate
+          fi
           find ./dist/*.whl -maxdepth 1 -type f | xargs pip install --force-reinstall --find-links=dist/
 
       - name: Check wheel distributions
         run: |
-          source venv/bin/activate
+          if [ $RUNNER_OS = 'Windows' ]; then
+            .\\venv\\Scripts\\activate
+          else
+            source venv/bin/activate
+          fi
           dbt --version
 
       - name: Install source distributions
         run: |
-          source venv/bin/activate
+          if [ $RUNNER_OS = 'Windows' ]; then
+            .\\venv\\Scripts\\activate
+          else
+            source venv/bin/activate
+          fi
           find ./dist/*.gz -maxdepth 1 -type f | xargs pip install --force-reinstall --find-links=dist/
 
       - name: Check source distributions
         run: |
-          source venv/bin/activate
+          if [ $RUNNER_OS = 'Windows' ]; then
+            .\\venv\\Scripts\\activate
+          else
+            source venv/bin/activate
+          fi
           dbt --version
