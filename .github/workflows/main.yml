@@ -1,18 +1,4 @@
-# **what?**
-# Runs code quality checks, unit tests, and verifies python build on
-# all code commited to the repository. This workflow should not
-# require any secrets since it runs for PRs from forked repos.
-# By default, secrets are not passed to workflows running from
-# a forked repo.
-
-# **why?**
-# Ensure code for dbt meets a certain quality standard.
-
-# **when?**
-# This will run for all PRs, when code is pushed to a release
-# branch, and when manually triggered.
-
-name: Tests and Code Checks
+name: Integration Workflow
 
 on:
   push:
@@ -26,7 +12,6 @@ on:
 
 permissions: read-all
 
-# will cancel previous workflows triggered by the same event and for the same ref for PRs or same SHA otherwise
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ contains(github.event_name, 'pull_request') && github.event.pull_request.head.ref || github.sha }}
   cancel-in-progress: true
@@ -37,7 +22,7 @@ defaults:
 
 jobs:
   code-quality:
-    name: code-quality
+    name: Code Quality
 
     runs-on: ubuntu-latest
 
@@ -47,27 +32,34 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Create a virtual environment
+        run: python3 -m venv venv       
+
       - name: Set up Python
         uses: actions/setup-python@v4
 
       - name: Install python dependencies
         run: |
-          pip install --user --upgrade pip
+          source venv/bin/activate
+          pip install --upgrade pip
           pip install pre-commit
           pip install mypy==0.782
           pip install flake8
           pip install black
           pip install dbt
+          pip install hatch 
           pip --version
           pre-commit --version
           mypy --version
           dbt --version
 
       - name: Run pre-commit hooks
-        run: pre-commit run --all-files --show-diff-on-failure
+        run: |
+          source venv/bin/activate
+          pre-commit run --all-files --show-diff-on-failure
 
   build:
-    name: build packages
+    name: Build Packages
 
     runs-on: ubuntu-latest
 
@@ -77,26 +69,27 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Create a virtual environment
+        run: python3 -m venv venv 
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Install python dependencies
         run: |
-          pip install --user --upgrade pip
+          source venv/bin/activate
+          pip install  --upgrade pip
           pip install --upgrade setuptools wheel twine check-wheel-contents
           pip --version
-
-      - name: Install Hatch
-        run: pip install --user hatch
-
       - name: Build distributions
-        run: ./scripts/build-dist.sh
+        run: |
+          source venv/bin/activate
+          ./scripts/build-dist.sh
 
       - name: Show distributions
         run: ls -lh dist/
-
 
       - name: Check distribution descriptions
         run: |
@@ -110,7 +103,7 @@ jobs:
           path: dist/
 
   test-build:
-    name: verify packages / python ${{ matrix.python-version }} / ${{ matrix.os }}
+    name: Verify Packages / Python ${{ matrix.python-version }} / ${{ matrix.os }}
 
     needs: build
 
@@ -120,7 +113,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11']
 
     steps:
       - name: Set up Python ${{ matrix.python-version }}
@@ -128,11 +121,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install python dependencies
+      - name: Create a virtual environment
+        run: python3 -m venv venv
+
+      - name: Activate virtual environment and install dependencies
         run: |
-          pip install --user --upgrade pip
+          source venv/bin/activate
+          pip install --upgrade pip
           pip install --upgrade wheel
           pip --version
+
       - uses: actions/download-artifact@v3
         with:
           name: dist
@@ -143,13 +141,20 @@ jobs:
 
       - name: Install wheel distributions
         run: |
+          source venv/bin/activate
           find ./dist/*.whl -maxdepth 1 -type f | xargs pip install --force-reinstall --find-links=dist/
+
       - name: Check wheel distributions
         run: |
+          source venv/bin/activate
           dbt --version
+
       - name: Install source distributions
         run: |
+          source venv/bin/activate
           find ./dist/*.gz -maxdepth 1 -type f | xargs pip install --force-reinstall --find-links=dist/
+
       - name: Check source distributions
         run: |
+          source venv/bin/activate
           dbt --version
