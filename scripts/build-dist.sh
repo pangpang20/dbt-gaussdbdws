@@ -2,8 +2,8 @@
 set -e
 
 # Upgrade pip and install hatch
-python3 -m pip install --upgrade --user pip
-python3 -m pip install --upgrade --user hatch
+python3 -m pip install --upgrade  pip
+python3 -m pip install --upgrade  hatch
 
 # Verify hatch installation
 export PATH="$HOME/.local/bin:$PATH"
