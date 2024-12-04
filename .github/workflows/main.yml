@@ -57,7 +57,7 @@ jobs:
           pip install mypy==0.782
           pip install flake8
           pip install black
-          dbt
+          pip install dbt
           pip --version
           pre-commit --version
           mypy --version
