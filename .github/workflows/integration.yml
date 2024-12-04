@@ -111,11 +111,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install python dependencies
+      - name: Create a virtual environment
+        run: python3 -m venv venv
+
+      - name: Activate virtual environment and install dependencies
         run: |
-          pip install --user --upgrade pip
+          source venv/bin/activate
+          pip install --upgrade pip
           pip install --upgrade wheel
           pip --version
+
       - uses: actions/download-artifact@v3
         with:
           name: dist
@@ -126,13 +131,20 @@ jobs:
 
       - name: Install wheel distributions
         run: |
+          source venv/bin/activate
           find ./dist/*.whl -maxdepth 1 -type f | xargs pip install --force-reinstall --find-links=dist/
+
       - name: Check wheel distributions
         run: |
+          source venv/bin/activate
           dbt --version
+
       - name: Install source distributions
         run: |
+          source venv/bin/activate
           find ./dist/*.gz -maxdepth 1 -type f | xargs pip install --force-reinstall --find-links=dist/
+
       - name: Check source distributions
         run: |
+          source venv/bin/activate
           dbt --version
