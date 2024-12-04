@@ -48,6 +48,7 @@ jobs:
           pip install black
           pip install dbt
           pip install hatch
+          pip install twine
           pip --version
           pre-commit --version
           mypy --version
@@ -81,7 +82,7 @@ jobs:
         run: |
           source venv/bin/activate
           pip install  --upgrade pip
-          pip install setuptools wheel twine check-wheel-contents
+          pip install setuptools wheel  check-wheel-contents
           pip --version
       - name: Build distributions
         run: |
