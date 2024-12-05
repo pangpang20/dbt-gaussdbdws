@@ -28,7 +28,9 @@ class TestStoreTestFailuresAsProjectLevelOff(StoreTestFailuresAsProjectLevelOff,
     pass
 
 
-class TestStoreTestFailuresAsProjectLevelView(StoreTestFailuresAsProjectLevelView, GaussDBDWSMixin):
+class TestStoreTestFailuresAsProjectLevelView(
+    StoreTestFailuresAsProjectLevelView, GaussDBDWSMixin
+):
     pass
 
 

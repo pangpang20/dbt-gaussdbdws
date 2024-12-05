@@ -135,7 +135,6 @@ class TestMacroOverrideBuiltin:
 
 
 class TestMacroOverridePackage:
- 
 
     @pytest.fixture(scope="class")
     def models(self):
@@ -152,7 +151,6 @@ class TestMacroOverridePackage:
 
 
 class TestMacroNotOverridePackage:
- 
 
     @pytest.fixture(scope="class")
     def models(self):
