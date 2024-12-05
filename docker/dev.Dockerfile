@@ -4,17 +4,17 @@ FROM ubuntu:24.04 AS base
 # prevent python installation from asking for time zone region
 ARG DEBIAN_FRONTEND=noninteractive
 
-# add python repository
-RUN apt-get update \
-    && apt-get install -y software-properties-common=0.99.48 \
-    && add-apt-repository -y ppa:deadsnakes/ppa \
+# Clean up APT cache and lists and disable post-invoke scripts
+RUN echo 'APT::Update::Post-Invoke { }' > /etc/apt/apt.conf.d/99disable-post-invoke \
+    && rm -rf /var/cache/apt/* /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && apt-get clean \
-    && rm -rf \
-        /var/lib/apt/lists/* \
-        /tmp/* \
-        /var/tmp/*
+    && apt-get update \
+    && apt-get install -y software-properties-common
 
-# install python
+# Ensure proper permissions
+RUN chmod -R 777 /var/cache/apt /var/cache/apt/archives /var/lib/apt/lists
+
+# Install Python and dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential=12.10ubuntu1 \
@@ -27,17 +27,13 @@ RUN apt-get update \
         python3-pip=24.0+dfsg-1ubuntu1 \
         python3-wheel=0.42.0-2 \
     && apt-get clean \
-    && rm -rf \
-        /var/lib/apt/lists/* \
-        /tmp/* \
-        /var/tmp/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/apt/*
 
-# update the default system interpreter to the newly installed version
+# Update the default system interpreter to the newly installed version
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
 
-# install python dependencies
+# Install Python dependencies
 RUN python -m pip install --upgrade "hatch==1.13.0" --no-cache-dir --compile
-
 
 FROM base AS dbt-gaussdbdws-dev
 

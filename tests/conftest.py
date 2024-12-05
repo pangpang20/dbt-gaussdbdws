@@ -1,15 +1,8 @@
-import pytest
+# in order to call dbt's internal profile rendering, we need to set the
+# flags global. This is a bit of a hack, but it's the best way to do it.
+from dbt.flags import set_from_args
+from argparse import Namespace
 
-# import os
-# import json
+set_from_args(Namespace(), None)
 
-# Import the fuctional fixtures as a plugin
-# Note: fixtures with session scope need to be local
-
-pytest_plugins = ["dbt.tests.fixtures.project"]
-
-
-# The profile dictionary, used to write out profiles.yml
-@pytest.fixture(scope="class")
-def dbt_profile_target():
-    pass
+pytest_plugins = "dbt.tests.fixtures.project"
