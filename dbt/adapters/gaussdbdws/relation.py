@@ -108,4 +108,8 @@ class GaussDBDWSRelation(BaseRelation):
             )
             for index in new_indexes.difference(existing_indexes)
         ]
-        return drop_changes + create_changes
+        return [
+            change
+            for change in drop_changes + create_changes
+            if isinstance(change, GaussDBDWSIndexConfigChange)
+        ]
