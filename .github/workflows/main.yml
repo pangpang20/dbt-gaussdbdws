@@ -43,7 +43,7 @@ jobs:
           source venv/bin/activate
           pip install --upgrade pip
           pip install pre-commit
-          pip install mypy==0.782
+          pip install mypy==1.5.1
           pip install flake8
           pip install black
           pip install dbt
