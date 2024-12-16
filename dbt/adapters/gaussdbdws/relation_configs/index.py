@@ -15,10 +15,10 @@ from dbt.adapters.relation_configs import (
 
 class GaussDBDWSIndexMethod(StrEnum):
     btree = "btree"
+    gin = "gin"
     hash = "hash"
     gist = "gist"
     spgist = "spgist"
-    gin = "gin"
     brin = "brin"
 
     @classmethod
